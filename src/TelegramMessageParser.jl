@@ -1,7 +1,8 @@
 module TelegramMessageParser
 
 using Gumbo
-using AbstractTrees
+using Gumbo: children
+using AbstractTrees: PreOrderDFS
 using Dates
 
 export parse_messages
@@ -11,7 +12,7 @@ export parse_messages
 struct Message
     raw::HTMLElement
     timestamp::DateTime
-    from::String
+    from_name::String
     content::HTMLElement
 end
 
@@ -27,19 +28,19 @@ function parse_messages(doc::HTMLDocument)
         return occursin("message default", get(attrs(elem), "class", ""))
     end
 
-    last_from = ""
+    last_from_name = ""
     return map(raw_messages) do raw
         if length(children(raw)) == 2
-            time, from, content = children(children(raw)[2])
-            global _last_from = from
+            time, from_name, content = children(children(raw)[2])
+            last_from_name = from_name
         else
             time, content = children(children(raw)[1])
-            from = _last_from
+            from_name = last_from_name
         end
 
         return Message(raw,
                        DateTime(attrs(time)["title"], dateformat"dd.mm.yyyy HH:MM:SS"),
-                       strip(text(from[1])),
+                       strip(text(from_name[1])),
                        content)
     end
 end
