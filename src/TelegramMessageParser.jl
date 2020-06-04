@@ -1,47 +1,49 @@
 module TelegramMessageParser
 
-using Gumbo
-using Gumbo: children
+using Gumbo: HTMLDocument, HTMLElement, HTMLText, attrs, children, parsehtml, text
+using Cascadia: eachmatch, @sel_str
 using AbstractTrees: PreOrderDFS
 using Dates
 
-export parse_messages
+
+export TelegramMessage, parse_messages
 
 "--------------------------------- Implementation ---------------------------------"
 
-struct Message
+struct TelegramMessage
     raw::HTMLElement
     timestamp::DateTime
     from_name::String
-    content::HTMLElement
+    text::String
 end
 
 parse_messages(files_or_docs) = vcat(parse_messages.(files_or_docs)...)
-parse_messages(filename::AbstractString) = parse_messages(parsehtml(read(filename, String)))
+parse_messages(filename::AbstractString) = parse_messages(parsehtml(read(filename,
+                                                                          String)))
 
 function parse_messages(doc::HTMLDocument)
-
-    raw_messages = filter(collect(PreOrderDFS(doc.root))) do elem
-        if elem isa HTMLText
-            return false
-        end
-        return occursin("message default", get(attrs(elem), "class", ""))
-    end
+    raw_messages = eachmatch(sel".message.default > .body", doc.root)
 
     last_from_name = ""
-    return map(raw_messages) do raw
-        if length(children(raw)) == 2
-            time, from_name, content = children(children(raw)[2])
-            last_from_name = from_name
-        else
-            time, content = children(children(raw)[1])
-            from_name = last_from_name
+    return map(raw_messages) do rmsg
+        time = begin
+            date_elem = eachmatch(sel".date", rmsg) |> only
+            DateTime(attrs(date_elem)["title"], dateformat"dd.mm.yyyy HH:MM:SS")
+        end
+        from_name = begin
+            fname_array = eachmatch(sel".from_name", rmsg)
+            if !isempty(fname_array)
+                last_from_name = fname_array |> first |> text |> strip
+            end
+            last_from_name
+        end
+        body = begin
+            rtext_array = eachmatch(sel".text" , rmsg)
+            isempty(rtext_array) ? "" : only(rtext_array) |> text |> strip
         end
 
-        return Message(raw,
-                       DateTime(attrs(time)["title"], dateformat"dd.mm.yyyy HH:MM:SS"),
-                       strip(text(from_name[1])),
-                       content)
+
+        return TelegramMessage(rmsg, time, from_name, body)
     end
 end
 

@@ -1,9 +1,15 @@
 name = "TelegramMessageParser"
 uuid = "cf04f27f-8d91-4d5e-9f0b-6c05761bcbb8"
 authors = ["lassepe <lasse.peters@mailbox.org>"]
-version = "0.1.0"
+version = "0.2.0"
 
 [deps]
 AbstractTrees = "1520ce14-60c1-5f80-bbc7-55ef81b5835c"
+Cascadia = "54eefc05-d75b-58de-a785-1a3403f0919f"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 Gumbo = "708ec375-b3d6-5a57-a7ce-8257bf98657a"
+
+[compat]
+AbstractTrees = "0.3"
+Cascadia = "0.4"
+Gumbo = "0.8"

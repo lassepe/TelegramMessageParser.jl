@@ -14,5 +14,6 @@ using TelegramMessageParser
 
             from_name: $(last(msgs).from_name)
             timestamp: $(last(msgs).timestamp)
+            text:      $(last(msgs).text)
             """)
 end
