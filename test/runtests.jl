@@ -1,10 +1,8 @@
 using Test
-
-using Glob
 using TelegramMessageParser
 
 @testset "parsing" begin
-    files = glob("./data/ChatExport_11_03_2020/messages*.html")
+    files = "./data/messages.html"
     msgs = parse_messages(files)
     println("Parsed $(length(msgs)) messages.")
 
