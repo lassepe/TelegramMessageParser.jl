@@ -16,6 +16,8 @@ pkg"instantiate ."
 ## Usage
 
 ```julia
+using TelegramMessageParser
+
 file = "path/to/messages.html"
 msgs = parse_messages(file)
 ```
