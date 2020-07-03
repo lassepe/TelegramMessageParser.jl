@@ -11,9 +11,7 @@ A simpler parser for HTML exports of Telegram chats.
 From a Julia REPL:
 
 ```julia
-using Pkg
-pkg"activate ."
-pkg"instantiate ."
+]add "https://github.com/lassepe/TelegramMessageParser.jl"
 ```
 
 ## Usage
