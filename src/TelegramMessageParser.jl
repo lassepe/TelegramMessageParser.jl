@@ -64,7 +64,7 @@ function parse_messages(doc::HTMLDocument)
     raw_messages = eachmatch(sel".message.default > .body", doc.root)
 
     last_from_name = ""
-    return map(raw_messages) do rmsg
+    map(raw_messages) do rmsg
         time = begin
             date_elem = eachmatch(sel".date", rmsg) |> only
             DateTime(attrs(date_elem)["title"], dateformat"dd.mm.yyyy HH:MM:SS")
@@ -81,8 +81,7 @@ function parse_messages(doc::HTMLDocument)
             isempty(rtext_array) ? "" : only(rtext_array) |> text |> strip
         end
 
-
-        return TelegramMessage(rmsg, time, from_name, body)
+        TelegramMessage(rmsg, time, from_name, body)
     end
 end
 
