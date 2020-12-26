@@ -1,10 +1,9 @@
 module TelegramMessageParser
 
-using Gumbo: HTMLDocument, HTMLElement, HTMLText, attrs, children, parsehtml, text
+using Gumbo: HTMLDocument, HTMLElement, attrs, parsehtml, text
 using Cascadia: eachmatch, @sel_str
-using AbstractTrees: PreOrderDFS
-using Dates
-using DocStringExtensions
+using Dates: @dateformat_str, DateTime
+using DocStringExtensions: TYPEDEF, TYPEDFIELDS, TYPEDSIGNATURES
 
 export TelegramMessage, parse_messages
 
@@ -31,13 +30,15 @@ struct TelegramMessage
 end
 
 function Base.show(io::IO, m::TelegramMessage)
-    print(io,
-    """
-    timestamp: $(m.timestamp)
-    from_name: $(m.from_name)
-    text:      $(m.text)
-    raw:       [ommitted]
-    """)
+    print(
+        io,
+        """
+        timestamp: $(m.timestamp)
+        from_name: $(m.from_name)
+        text:      $(m.text)
+        raw:       [ommitted]
+        """,
+    )
 end
 
 """
@@ -53,8 +54,7 @@ $(TYPEDSIGNATURES)
 
 Parse messages from file at path `filename`.
 """
-parse_messages(filename::AbstractString) = parse_messages(parsehtml(read(filename,
-                                                                          String)))
+parse_messages(filename::AbstractString) = parse_messages(parsehtml(read(filename, String)))
 """
 $(TYPEDSIGNATURES)
 
@@ -65,19 +65,19 @@ function parse_messages(doc::HTMLDocument)
 
     last_from_name = ""
     map(raw_messages) do rmsg
-        time = begin
+        time = let
             date_elem = eachmatch(sel".date", rmsg) |> only
             DateTime(attrs(date_elem)["title"], dateformat"dd.mm.yyyy HH:MM:SS")
         end
-        from_name = begin
+        from_name = let
             fname_array = eachmatch(sel".from_name", rmsg)
             if !isempty(fname_array)
                 last_from_name = fname_array |> first |> text |> strip
             end
             last_from_name
         end
-        body = begin
-            rtext_array = eachmatch(sel".text" , rmsg)
+        body = let
+            rtext_array = eachmatch(sel".text", rmsg)
             isempty(rtext_array) ? "" : only(rtext_array) |> text |> strip
         end
 

@@ -4,14 +4,12 @@ authors = ["lassepe <lasse.peters@mailbox.org>"]
 version = "0.2.1"
 
 [deps]
-AbstractTrees = "1520ce14-60c1-5f80-bbc7-55ef81b5835c"
 Cascadia = "54eefc05-d75b-58de-a785-1a3403f0919f"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
 Gumbo = "708ec375-b3d6-5a57-a7ce-8257bf98657a"
 
 [compat]
-AbstractTrees = "0.3"
 Cascadia = "0.4, 0.5, 1"
 DocStringExtensions = "0.8"
 Gumbo = "0.8"
